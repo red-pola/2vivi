@@ -1,0 +1,41 @@
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+  description: "Grant business network administrators full access to user resources"
+  participant: "org.hyperledger.composer.system.NetworkAdmin"
+  operation: ALL
+  resource: "**"
+  action: ALLOW
+}
+
+rule NetworkAdminSystem {
+  description: "Grant business network administrators full access to system resources"
+  participant: "org.hyperledger.composer.system.NetworkAdmin"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule BuyerUserProduct {
+  description: "Grant buyer read access to products"
+  participant: "com.redpola.vivi.Buyer"
+  operation: READ
+  resource: "com.redpola.vivi.Product"
+  action: ALLOW
+}
+
+rule BuyerUserOrder {
+  description: "Enable Buyers to execute all actions on an Order"
+  participant(m): "com.redpola.vivi.Buyer"
+  operation: READ, CREATE, UPDATE
+  resource(v): "com.redpola.vivi.Order"
+  condition: (v.buyer.buyerID == m.getIdentifier())
+  action: ALLOW
+}
+

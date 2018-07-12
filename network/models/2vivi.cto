@@ -1,0 +1,87 @@
+namespace com.redpola.vivi
+
+import com.redpola.base.*
+
+participant Buyer identified by buyerID extends Member {
+  o String buyerID
+  o String avatarURL optional
+}
+
+participant Seller identified by sellerID extends Member {
+  o String sellerID
+  o String storeName
+}
+
+asset Order identified by orderID {
+  o String orderID
+  o OrderStatus status
+  o String memo optional
+  o Double amount
+  o PaymentMethod paymentMethod
+  o DateTime created
+  o DateTime cancelled
+  o DateTime delivering
+  o DateTime completed
+  o String[] items
+  --> Buyer buyer
+  --> Seller seller
+}
+
+asset Product identified by productID {
+  o String productID
+  o String name
+  o String description
+  o String providerName
+  o Double price
+}
+
+transaction OrderCreating {
+  o Double amount
+  o PaymentMethod paymentMethod
+  --> Order order
+  --> Buyer buyer
+  --> Seller seller
+}
+
+transaction OrderCancelling {
+  --> Order order
+}
+
+transaction OrderDelivering {
+  o String deliveryStatus
+  --> Order order
+  --> Seller seller
+}
+
+transaction OrderCompleting {
+  --> Order order
+}
+
+abstract event OrderEvent {
+  o String orderID
+}
+
+// Notification that an order has been created
+event OrderCreated extends OrderEvent {
+  o String buyerID
+  o String sellerID
+}
+
+// Notification that an order has been cancelled
+event OrderCancelled extends OrderEvent {
+  o String buyerID
+  o String sellerID
+}
+
+// Notification that order in being delivered
+event OrderDeliveryStatusUpdated extends OrderEvent {
+  o String buyerID
+  o String sellerID
+}
+
+// Notification that order has been delivered
+event OrderCompleted extends OrderEvent {
+  o String buyerID
+  o String sellerID
+}
+

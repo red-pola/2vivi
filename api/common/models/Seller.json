@@ -1,0 +1,55 @@
+{
+  "name": "Seller",
+  "description": "A participant named Seller",
+  "plural": "Seller",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "composer": {
+      "type": "participant",
+      "namespace": "com.redpola.vivi",
+      "name": "Seller",
+      "fqn": "com.redpola.vivi.Seller",
+      "abstract": false
+    }
+  },
+  "properties": {
+    "$class": {
+      "type": "string",
+      "required": false,
+      "description": "The class identifier for this type",
+      "default": "com.redpola.vivi.Seller"
+    },
+    "sellerID": {
+      "type": "string",
+      "id": true,
+      "required": true,
+      "description": "The instance identifier for this type"
+    },
+    "storeName": {
+      "type": "string",
+      "required": true
+    },
+    "firstName": {
+      "type": "string",
+      "required": true
+    },
+    "lastName": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "string",
+      "required": true
+    },
+    "address": {
+      "type": "Address",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

@@ -1,0 +1,55 @@
+{
+  "name": "Buyer",
+  "description": "A participant named Buyer",
+  "plural": "Buyer",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "composer": {
+      "type": "participant",
+      "namespace": "com.redpola.vivi",
+      "name": "Buyer",
+      "fqn": "com.redpola.vivi.Buyer",
+      "abstract": false
+    }
+  },
+  "properties": {
+    "$class": {
+      "type": "string",
+      "required": false,
+      "description": "The class identifier for this type",
+      "default": "com.redpola.vivi.Buyer"
+    },
+    "buyerID": {
+      "type": "string",
+      "id": true,
+      "required": true,
+      "description": "The instance identifier for this type"
+    },
+    "avatarURL": {
+      "type": "string",
+      "required": false
+    },
+    "firstName": {
+      "type": "string",
+      "required": true
+    },
+    "lastName": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "string",
+      "required": true
+    },
+    "address": {
+      "type": "Address",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

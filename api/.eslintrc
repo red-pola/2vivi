@@ -1,0 +1,14 @@
+{
+  "extends": "loopback",
+  "parserOptions": {
+    "ecmaVersion": 8
+  },
+  "rules": {
+    "max-len": [
+      "error",
+      {
+        "code": 120
+      }
+    ]
+  }
+}

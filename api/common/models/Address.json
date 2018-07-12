@@ -1,0 +1,53 @@
+{
+  "name": "Address",
+  "description": "A concept named Address",
+  "plural": "Address",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "composer": {
+      "type": "concept",
+      "namespace": "com.redpola.base",
+      "name": "Address",
+      "fqn": "com.redpola.base.Address",
+      "abstract": false
+    }
+  },
+  "properties": {
+    "$class": {
+      "type": "string",
+      "required": false,
+      "description": "The class identifier for this type",
+      "default": "com.redpola.base.Address"
+    },
+    "street": {
+      "type": "string",
+      "required": true
+    },
+    "ward": {
+      "type": "string",
+      "required": true
+    },
+    "district": {
+      "type": "string",
+      "required": true
+    },
+    "city": {
+      "type": "string",
+      "required": false
+    },
+    "province": {
+      "type": "string",
+      "required": true
+    },
+    "country": {
+      "type": "string",
+      "required": true,
+      "default": "Việt Nam"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

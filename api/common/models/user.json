@@ -1,0 +1,73 @@
+{
+  "name": "AppUser",
+  "description": "Application User",
+  "plural": "users",
+  "base": "User",
+  "swagger": {
+    "tag": {
+      "name": "User"
+    }
+  },
+  "properties": {},
+  "validations": [],
+  "relations": {
+    "accessTokens": {
+      "type": "hasMany",
+      "model": "AppAccessToken",
+      "foreignKey": "userId"
+    },
+    "identities": {
+      "type": "hasMany",
+      "model": "AppUserIdentity",
+      "foreignKey": "userId"
+    },
+    "credentials": {
+      "type": "hasMany",
+      "model": "AppUserCredential",
+      "foreignKey": "userId"
+    },
+    "wallets": {
+      "type": "hasMany",
+      "model": "Wallet",
+      "foreignKey": "userId"
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "registration"
+    }
+  ],
+  "methods": {
+    "registration": {
+      "accepts": [
+        {
+          "arg": "data",
+          "type": "object",
+          "required": true,
+          "description": "User data",
+          "http": {
+            "source": "body"
+          }
+        }
+      ],
+      "returns": [
+        {
+          "type": "User",
+          "root": true,
+          "description": "Created user"
+        }
+      ],
+      "description": "User registration method",
+      "http": [
+        {
+          "path": "/registration",
+          "verb": "post"
+        }
+      ]
+    }
+  }
+}

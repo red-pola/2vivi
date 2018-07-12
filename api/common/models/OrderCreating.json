@@ -1,0 +1,67 @@
+{
+  "name": "OrderCreating",
+  "description": "A transaction named OrderCreating",
+  "plural": "OrderCreating",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "composer": {
+      "type": "transaction",
+      "namespace": "com.redpola.vivi",
+      "name": "OrderCreating",
+      "fqn": "com.redpola.vivi.OrderCreating",
+      "abstract": false
+    }
+  },
+  "forceId": true,
+  "properties": {
+    "$class": {
+      "type": "string",
+      "required": false,
+      "description": "The class identifier for this type",
+      "default": "com.redpola.vivi.OrderCreating"
+    },
+    "amount": {
+      "type": "number",
+      "required": true
+    },
+    "paymentMethod": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "COD"
+      ]
+    },
+    "order": {
+      "type": "any",
+      "required": true,
+      "description": "The identifier of an instance of order"
+    },
+    "buyer": {
+      "type": "any",
+      "required": true,
+      "description": "The identifier of an instance of buyer"
+    },
+    "seller": {
+      "type": "any",
+      "required": true,
+      "description": "The identifier of an instance of seller"
+    },
+    "transactionId": {
+      "type": "string",
+      "id": true,
+      "generated": true,
+      "required": false,
+      "description": "The instance identifier for this type"
+    },
+    "timestamp": {
+      "type": "date",
+      "required": false
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

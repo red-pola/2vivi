@@ -1,0 +1,46 @@
+{
+  "name": "OrderCancelling",
+  "description": "A transaction named OrderCancelling",
+  "plural": "OrderCancelling",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "composer": {
+      "type": "transaction",
+      "namespace": "com.redpola.vivi",
+      "name": "OrderCancelling",
+      "fqn": "com.redpola.vivi.OrderCancelling",
+      "abstract": false
+    }
+  },
+  "forceId": true,
+  "properties": {
+    "$class": {
+      "type": "string",
+      "required": false,
+      "description": "The class identifier for this type",
+      "default": "com.redpola.vivi.OrderCancelling"
+    },
+    "order": {
+      "type": "any",
+      "required": true,
+      "description": "The identifier of an instance of order"
+    },
+    "transactionId": {
+      "type": "string",
+      "id": true,
+      "generated": true,
+      "required": false,
+      "description": "The instance identifier for this type"
+    },
+    "timestamp": {
+      "type": "date",
+      "required": false
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

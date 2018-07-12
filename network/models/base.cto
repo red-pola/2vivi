@@ -1,0 +1,29 @@
+namespace com.redpola.base
+
+concept Address {
+  o String street
+  o String ward
+  o String district
+  o String city optional
+  o String province
+  o String country default = "Việt Nam"
+}
+
+abstract participant Member {
+  o String firstName optional
+  o String lastName optional
+  o String email
+  o Address address optional
+}
+
+enum OrderStatus {
+  o SUBMITTED
+  o CONFIRMED
+  o CANCELLED
+  o DELIVERING
+  o COMPLETED
+}
+
+enum PaymentMethod {
+  o COD
+}

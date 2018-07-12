@@ -1,0 +1,93 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models",
+      "../node_modules/loopback-component-passport/lib/models"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins",
+      "./mixins"
+    ]
+  },
+  "AppUser": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Card": {
+    "dataSource": "db",
+    "public": true
+  },
+  "AppAccessToken": {
+    "dataSource": "db",
+    "public": false
+  },
+  "AppUserCredential": {
+    "dataSource": "db",
+    "public": false
+  },
+  "AppUserIdentity": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ACL": {
+    "dataSource": "db",
+    "public": false
+  },
+  "RoleMapping": {
+    "dataSource": "db",
+    "public": false
+  },
+  "Role": {
+    "dataSource": "db",
+    "public": false
+  },
+  "System": {
+    "dataSource": "composer",
+    "public": true
+  },
+  "PingResponse": {
+    "dataSource": "composer",
+    "public": false
+  },
+  "Buyer": {
+    "dataSource": "composer",
+    "public": true
+  },
+  "Seller": {
+    "dataSource": "composer",
+    "public": true
+  },
+  "Order": {
+    "dataSource": "composer",
+    "public": true
+  },
+  "Product": {
+    "dataSource": "composer",
+    "public": true
+  },
+  "OrderCreating": {
+    "dataSource": "composer",
+    "public": true
+  },
+  "OrderCancelling": {
+    "dataSource": "composer",
+    "public": true
+  },
+  "OrderDelivering": {
+    "dataSource": "composer",
+    "public": true
+  },
+  "OrderCompleting": {
+    "dataSource": "composer",
+    "public": true
+  },
+  "Address": {
+    "dataSource": "composer",
+    "public": true
+  }
+}

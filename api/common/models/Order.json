@@ -1,0 +1,94 @@
+{
+  "name": "Order",
+  "description": "An asset named Order",
+  "plural": "Order",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "composer": {
+      "type": "asset",
+      "namespace": "com.redpola.vivi",
+      "name": "Order",
+      "fqn": "com.redpola.vivi.Order",
+      "abstract": false
+    }
+  },
+  "properties": {
+    "$class": {
+      "type": "string",
+      "required": false,
+      "description": "The class identifier for this type",
+      "default": "com.redpola.vivi.Order"
+    },
+    "orderID": {
+      "type": "string",
+      "id": true,
+      "required": true,
+      "description": "The instance identifier for this type"
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "SUBMITTED",
+        "CONFIRMED",
+        "CANCELLED",
+        "DELIVERING",
+        "COMPLETED"
+      ]
+    },
+    "memo": {
+      "type": "string",
+      "required": false
+    },
+    "amount": {
+      "type": "number",
+      "required": true
+    },
+    "paymentMethod": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "COD"
+      ]
+    },
+    "created": {
+      "type": "date",
+      "required": true
+    },
+    "cancelled": {
+      "type": "date",
+      "required": true
+    },
+    "delivering": {
+      "type": "date",
+      "required": true
+    },
+    "completed": {
+      "type": "date",
+      "required": true
+    },
+    "items": {
+      "type": [
+        "string"
+      ],
+      "required": false,
+      "default": []
+    },
+    "buyer": {
+      "type": "any",
+      "required": true,
+      "description": "The identifier of an instance of buyer"
+    },
+    "seller": {
+      "type": "any",
+      "required": true,
+      "description": "The identifier of an instance of seller"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

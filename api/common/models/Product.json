@@ -1,0 +1,51 @@
+{
+  "name": "Product",
+  "description": "An asset named Product",
+  "plural": "Product",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "composer": {
+      "type": "asset",
+      "namespace": "com.redpola.vivi",
+      "name": "Product",
+      "fqn": "com.redpola.vivi.Product",
+      "abstract": false
+    }
+  },
+  "properties": {
+    "$class": {
+      "type": "string",
+      "required": false,
+      "description": "The class identifier for this type",
+      "default": "com.redpola.vivi.Product"
+    },
+    "productID": {
+      "type": "string",
+      "id": true,
+      "required": true,
+      "description": "The instance identifier for this type"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "string",
+      "required": true
+    },
+    "providerName": {
+      "type": "string",
+      "required": true
+    },
+    "price": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

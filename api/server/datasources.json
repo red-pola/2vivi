@@ -1,0 +1,18 @@
+{
+  "db": {
+    "host": "127.0.0.1",
+    "port": 27017,
+    "database": "2vivi-auth",
+    "password": "password",
+    "name": "db",
+    "user": "root",
+    "connector": "mongodb"
+  },
+  "composer": {
+    "name": "composer",
+    "connector": "loopback-connector-composer",
+    "card": "admin@2vivi-network",
+    "namespaces": false,
+    "multiuser": true
+  }
+}
