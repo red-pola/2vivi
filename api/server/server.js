@@ -4,8 +4,6 @@ const loopback = require('loopback');
 const boot = require('loopback-boot');
 const loopbackPassport = require('loopback-component-passport');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
 const Util = require('../lib/util');
 
 const app = (module.exports = loopback());
@@ -45,17 +43,6 @@ app.initialize = () => {
     }),
   );
 
-  // Enable to the use of cookie based sessions.
-  app.middleware('session:before', cookieParser(app.get('cookieSecret')));
-  app.middleware(
-    'session',
-    session({
-      secret: 'kitty',
-      saveUninitialized: true,
-      resave: true,
-    }),
-  );
-
   // Initialize Passport.
   const passportConfigurator = new loopbackPassport.PassportConfigurator(app);
   passportConfigurator.init();
@@ -80,18 +67,6 @@ app.initialize = () => {
     config.profileToUser = Util.profileToUser;
     passportConfigurator.configureProvider(provider, config);
   }
-
-  // Add a GET handler for logging out.
-  app.get('/auth/logout', async (req, res, next) => {
-    if (req.accessToken) {
-      await app.models.AppUser.logout(req.accessToken.id);
-    }
-
-    req.logout();
-    res.clearCookie('access_token');
-    res.clearCookie('userId');
-    res.redirect('/');
-  });
 };
 
 // Bootstrap the application, configure models, datasources and middleware.

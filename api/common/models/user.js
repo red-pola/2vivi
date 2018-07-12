@@ -4,7 +4,7 @@ const LoopBackCardStore = require('../../lib/loopback-card-store');
 const Util = require('../lib/composer');
 
 module.exports = User => {
-  const whitelist = ['registration', 'login', 'logout', 'changePassword'];
+  const whitelist = ['registration', 'login', 'logout', 'changePassword', 'findById'];
 
   User.sharedClass.methods().forEach(method => {
     const name = `${method.isStatic ? '' : 'prototype.'}${method.name}`;
