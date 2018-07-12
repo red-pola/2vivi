@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "body-parser": "^1.18.3",
-    "composer-admin": "^0.19.11",
+    "composer-admin": "^0.19.12",
     "compression": "^1.0.3",
     "cors": "^2.5.2",
     "crypto": "^1.0.1",
@@ -26,7 +26,7 @@
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^6.0.0",
     "loopback-component-passport": "^3.9.0",
-    "loopback-connector-composer": "0.19.11",
+    "loopback-connector-composer": "0.19.12",
     "loopback-connector-mongodb": "^3.4.4",
     "passport-local": "^1.0.0",
     "serve-favicon": "^2.0.1",
