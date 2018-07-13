@@ -17,14 +17,14 @@ asset Order identified by orderID {
   o OrderStatus status
   o String memo optional
   o Double amount
-  o PaymentMethod paymentMethod
-  o DateTime created
-  o DateTime cancelled
-  o DateTime delivering
-  o DateTime completed
+  o PaymentMethod paymentMethod optional
+  o DateTime created optional
+  o DateTime cancelled optional
+  o DateTime delivering optional
+  o DateTime completed optional
   o String[] items
   --> Buyer buyer
-  --> Seller seller
+  --> Seller seller optional
 }
 
 asset Product identified by productID {

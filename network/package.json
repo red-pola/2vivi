@@ -10,6 +10,7 @@
     "pretest": "npm run lint",
     "lint": "eslint .",
     "test": "mocha -t 0 test/*.js",
+    "test-watch": "mocha -t 0 --watch --recursive test/*.js",
     "test-debug": "mocha --trace-warnings --inspect-brk -t 0 test/*.js"
   },
   "keywords": [

@@ -31,11 +31,18 @@ rule BuyerUserProduct {
 }
 
 rule BuyerUserOrder {
-  description: "Enable Buyers to execute all actions on an Order"
+  description: "Enable Buyers to execute all actions on their own Orders"
   participant(m): "com.redpola.vivi.Buyer"
   operation: READ, CREATE, UPDATE
   resource(v): "com.redpola.vivi.Order"
-  condition: (v.buyer.buyerID == m.getIdentifier())
+  condition: (v.buyer.getIdentifier() == m.getIdentifier())
   action: ALLOW
 }
 
+rule BuyerUserOrderCreating {
+  description: "Enable Buyers to create OrderCreating transaction"
+  participant: "com.redpola.vivi.Buyer"
+  operation: CREATE
+  resource: "com.redpola.vivi.OrderCreating"
+  action: ALLOW
+}

@@ -11,7 +11,7 @@ const {
 const path = require('path');
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-as-promised'));
 
 const BASE = 'com.redpola.base';
@@ -241,7 +241,36 @@ describe('2vivi Business Network', () => {
   }
 
   describe('Buyer participant', () => {
-    it('can read all of the products', async () => {
+    /**
+     * Create and submit creating order transaction
+     */
+    async function createOrder(id, buyerID, sellerID) {
+      const orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`
+      );
+
+      const order = factory.newResource(NS, 'Order', id);
+      order.status = 'SUBMITTED';
+      order.memo = '';
+      order.amount = 0;
+      order.items = [];
+      order.buyer = factory.newRelationship(NS, 'Buyer', buyerID);
+
+      await orderRegistry.add(order);
+
+      const orderCreating = factory.newTransaction(NS, 'OrderCreating');
+      orderCreating.amount = 0;
+      orderCreating.paymentMethod = 'COD';
+      orderCreating.buyer = factory.newRelationship(NS, 'Buyer', buyerID);
+      orderCreating.seller = factory.newRelationship(NS, 'Seller', sellerID);
+      orderCreating.order = factory.newRelationship(NS, 'Order', order.getIdentifier());
+
+      await businessNetworkConnection.submitTransaction(orderCreating);
+
+      return order;
+    }
+
+    it('can see all of the products', async () => {
       // Use the identity for buyer1.
       await useIdentity('buyer1');
 
@@ -269,26 +298,50 @@ describe('2vivi Business Network', () => {
         `${NS}.Order`
       );
 
-      const order = factory.newResource(NS, 'Order', '1');
-      order.status = '';
-      order.memo = '';
-      order.paymentMethod = 'COD';
-      order.amount = 0;
-      order.created = null;
-      order.cancelled = null;
-      order.delivering = null;
-      order.completed = null;
-      order.items = [];
-      order.buyer = factory.newRelationship(NS, 'Buyer', '1');
-      order.seller = factory.newRelationship(NS, 'Seller', '1');
+      const order = await createOrder('1', '1', '1');
+      const updatedOrder = await orderRegistry.get(order.getIdentifier());
+
+      updatedOrder.buyer.getIdentifier().should.equal('1');
+      updatedOrder.seller.getIdentifier().should.equal('1');
+      should.exist(updatedOrder.created);
+      updatedOrder.paymentMethod.should.equal('COD');
+
+      events.length.should.equal(1);
+      events[0].getType().should.equal('OrderCreated');
     });
 
     it('can read their own orders', async () => {
-      throw new Error('Not implement yet');
+      const orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`
+      );
+
+      await useIdentity('buyer1');
+
+      let orders = await orderRegistry.getAll();
+      orders.length.should.equal(0);
+
+      await createOrder('1', '1', '1');
+
+      orders = await orderRegistry.getAll();
+      orders.length.should.equal(1);
+      orders[0].buyer.getIdentifier().should.equal('1');
     });
 
     it('cannot read other\'s orders', async () => {
-      throw new Error('Not implement yet');
+      await useIdentity('buyer1');
+      let orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`
+      );
+      await createOrder('1', '1', '1');
+      let orders = await orderRegistry.getAll();
+      orders.length.should.equal(1);
+
+      await useIdentity('buyer2');
+      orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`
+      );
+      orders = await orderRegistry.getAll();
+      orders.length.should.equal(0);
     });
   });
 });
