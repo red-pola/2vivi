@@ -4,6 +4,7 @@ const loopback = require('loopback');
 const boot = require('loopback-boot');
 const loopbackPassport = require('loopback-component-passport');
 const bodyParser = require('body-parser');
+const WebSocket = require('ws');
 const Util = require('../lib/util');
 
 const app = (module.exports = loopback());
@@ -78,6 +79,24 @@ boot(app, __dirname, err => {
 
   // Start the server if `$ node server.js`
   if (require.main === module) {
-    app.start();
+    const server = app.start();
+
+    // Create a new WebSocket server that manages clients for us.
+    const wss = new WebSocket.Server({
+      server,
+      clientTracking: true,
+    });
+
+    // Add a broadcast method that sends data to all connected clients.
+    wss.broadcast = data => {
+      wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(data);
+        }
+      });
+    };
+
+    // Store the WebSocket server for the boot script to find.
+    app.set('wss', wss);
   }
 });
