@@ -71,6 +71,30 @@ async function orderCancellingTransaction(tx) {
 }
 
 /**
+ * Order delivering transaction
+ * @param {com.redpola.vivi.OrderDelivering} tx - order delivering transaction
+ * @transaction
+ */
+async function orderDeliveringTransaction(tx) {
+  if (
+    tx.order.status !== STATUS.CONFIRMED.value &&
+    tx.order.status !== STATUS.DELIVERING.value
+  ) {
+    throw new Error('Cannot deliver an unconfirmed order');
+  }
+
+  tx.order.delivering = tx.timestamp;
+  tx.order.status = STATUS.DELIVERING.value;
+  tx.order.memo = tx.deliveryStatus;
+
+  const orderRegistry = await getAssetRegistry(`${NS}.Order`);
+
+  await orderRegistry.update(tx.order);
+
+  emitOrderEvent('OrderDeliveryStatusUpdated', tx.order);
+}
+
+/**
  * emitOrderEvent emits an order event of the type passed in on param 1
  *   all OrderEvents have one extra parameter, which is the order identifier
  * @param {String} event - the event to be emitted
@@ -79,16 +103,9 @@ async function orderCancellingTransaction(tx) {
 function emitOrderEvent(event, order) {
   const orderEvent = getFactory().newEvent(NS, event);
 
-  orderEvent.orderID = order.$identifier;
-  orderEvent.buyerID = order.buyer.$identifier;
-  orderEvent.sellerID = order.seller.$identifier;
-
-  switch (event) {
-  case 'OrderDeliveryStatusUpdated':
-  case 'OrderCompleted':
-    orderEvent.shipperID = order.shipper.$identifier;
-    break;
-  }
+  orderEvent.orderID = order.getIdentifier();
+  orderEvent.buyerID = order.buyer.getIdentifier();
+  orderEvent.sellerID = order.seller.getIdentifier();
 
   emit(orderEvent);
 }

@@ -68,7 +68,6 @@ transaction OrderCancelling {
 transaction OrderDelivering {
   o String deliveryStatus
   --> Order order
-  --> Seller seller
 }
 
 transaction OrderCompleting {

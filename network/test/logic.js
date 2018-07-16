@@ -242,39 +242,39 @@ describe('2vivi Business Network', () => {
     factory = businessNetworkConnection.getBusinessNetwork().getFactory();
   }
 
+  /**
+   * Create and submit creating order transaction
+   */
+  async function createOrder(id, buyerID, sellerID, items) {
+    const orderRegistry = await businessNetworkConnection.getAssetRegistry(
+      `${NS}.Order`,
+    );
+
+    const order = factory.newResource(NS, 'Order', id);
+    order.status = 'SUBMITTED';
+    order.memo = '';
+    order.amount = 0;
+    order.items = items;
+    order.buyer = factory.newRelationship(NS, 'Buyer', buyerID);
+
+    await orderRegistry.add(order);
+
+    const orderCreating = factory.newTransaction(NS, 'OrderCreating');
+    orderCreating.paymentMethod = 'COD';
+    orderCreating.buyer = factory.newRelationship(NS, 'Buyer', buyerID);
+    orderCreating.seller = factory.newRelationship(NS, 'Seller', sellerID);
+    orderCreating.order = factory.newRelationship(
+      NS,
+      'Order',
+      order.getIdentifier(),
+    );
+
+    await businessNetworkConnection.submitTransaction(orderCreating);
+
+    return order;
+  }
+
   describe('Buyer participant', () => {
-    /**
-     * Create and submit creating order transaction
-     */
-    async function createOrder(id, buyerID, sellerID, items) {
-      const orderRegistry = await businessNetworkConnection.getAssetRegistry(
-        `${NS}.Order`,
-      );
-
-      const order = factory.newResource(NS, 'Order', id);
-      order.status = 'SUBMITTED';
-      order.memo = '';
-      order.amount = 0;
-      order.items = items;
-      order.buyer = factory.newRelationship(NS, 'Buyer', buyerID);
-
-      await orderRegistry.add(order);
-
-      const orderCreating = factory.newTransaction(NS, 'OrderCreating');
-      orderCreating.paymentMethod = 'COD';
-      orderCreating.buyer = factory.newRelationship(NS, 'Buyer', buyerID);
-      orderCreating.seller = factory.newRelationship(NS, 'Seller', sellerID);
-      orderCreating.order = factory.newRelationship(
-        NS,
-        'Order',
-        order.getIdentifier(),
-      );
-
-      await businessNetworkConnection.submitTransaction(orderCreating);
-
-      return order;
-    }
-
     it('can see all of the products', async () => {
       // Use the identity for buyer1.
       await useIdentity('buyer1');
@@ -319,7 +319,9 @@ describe('2vivi Business Network', () => {
       item.quantity = 20;
       item.product = factory.newRelationship(NS, 'Product', '1');
 
-      await createOrder('1', '1', '1', [item]).should.be.rejectedWith(/Product (.*) only has (.*) item[s]* left/);
+      await createOrder('1', '1', '1', [item]).should.be.rejectedWith(
+        /Product (.*) only has (.*) item[s]* left/,
+      );
     });
 
     it('can place an order', async () => {
@@ -423,6 +425,130 @@ describe('2vivi Business Network', () => {
       const updatedOrder = await orderRegistry.get(order.getIdentifier());
       updatedOrder.status.should.equal('CANCELLED');
       should.exist(updatedOrder.cancelled);
+    });
+
+    it('cannot cancel the other\'s order', async () => {
+      await useIdentity('buyer1');
+
+      const orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`,
+      );
+
+      const item = factory.newConcept(NS, 'OrderItem');
+      item.quantity = 2;
+      item.product = factory.newRelationship(NS, 'Product', '1');
+
+      const order = await createOrder('1', '1', '1', [item]);
+
+      await useIdentity('buyer2');
+
+      const orderCancelling = factory.newTransaction(NS, 'OrderCancelling');
+      orderCancelling.order = factory.newRelationship(
+        NS,
+        'Order',
+        order.getIdentifier(),
+      );
+
+      await businessNetworkConnection
+        .submitTransaction(orderCancelling)
+        .should.be.rejectedWith(Error);
+    });
+  });
+
+  describe('Seller participant', () => {
+    it('can see all of the products', async () => {
+      // Use the identity for buyer1.
+      await useIdentity('seller1');
+
+      const productRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Product`,
+      );
+      const products = await productRegistry.getAll();
+
+      // Validate.
+      products.should.have.lengthOf(2);
+
+      const [product1, product2] = products;
+
+      product1.providerName.should.equal('Provider #1');
+      product1.price.should.equal(12000);
+
+      product1.providerName.should.equal('Provider #1');
+      product2.price.should.equal(22000);
+    });
+
+    it('can read their own orders', async () => {
+      await useIdentity('buyer1');
+
+      const item = factory.newConcept(NS, 'OrderItem');
+      item.quantity = 2;
+      item.product = factory.newRelationship(NS, 'Product', '1');
+
+      await createOrder('1', '1', '1', [item]);
+
+      await useIdentity('seller1');
+
+      const orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`,
+      );
+
+      const orders = await orderRegistry.getAll();
+      orders.length.should.equal(1);
+      orders[0].buyer.getIdentifier().should.equal('1');
+    });
+
+    it('cannot read other\'s orders', async () => {
+      await useIdentity('buyer1');
+
+      const item = factory.newConcept(NS, 'OrderItem');
+      item.quantity = 2;
+      item.product = factory.newRelationship(NS, 'Product', '1');
+
+      await createOrder('1', '1', '1', [item]);
+
+      await useIdentity('seller2');
+      const orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`,
+      );
+      const orders = await orderRegistry.getAll();
+      orders.length.should.equal(0);
+    });
+
+    it('can update delivery status', async () => {
+      await useIdentity('buyer1');
+
+      const item = factory.newConcept(NS, 'OrderItem');
+      item.quantity = 2;
+      item.product = factory.newRelationship(NS, 'Product', '1');
+
+      const order = await createOrder('1', '1', '1', [item]);
+
+      await useIdentity('seller1');
+
+      const orderDelivering = factory.newTransaction(NS, 'OrderDelivering');
+      orderDelivering.deliveryStatus = 'Delivering';
+      orderDelivering.order = factory.newRelationship(
+        NS,
+        'Order',
+        order.getIdentifier(),
+      );
+
+      await businessNetworkConnection.submitTransaction(orderDelivering);
+
+      const orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`,
+      );
+
+      let updatedOrder = await orderRegistry.get(order.getIdentifier());
+      should.exist(updatedOrder.delivering);
+      updatedOrder.memo.should.equal('Delivering');
+
+      orderDelivering.deliveryStatus = 'Delay #1';
+
+      await businessNetworkConnection.submitTransaction(orderDelivering);
+
+      updatedOrder = await orderRegistry.get(order.getIdentifier());
+      updatedOrder.memo.should.equal('Delay #1');
     });
   });
 });

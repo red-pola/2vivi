@@ -49,8 +49,36 @@ rule BuyerUserOrderCreating {
 
 rule BuyerUserOrderCancelling {
   description: "Enable Buyers to create OrderCancelling transaction"
-  participant: "com.redpola.vivi.Buyer"
+  participant(m): "com.redpola.vivi.Buyer"
   operation: CREATE
-  resource: "com.redpola.vivi.OrderCancelling"
+  resource(v): "com.redpola.vivi.OrderCancelling"
+  condition: (v.order.buyer.getIdentifier() == m.getIdentifier())
   action: ALLOW
 }
+
+rule SellerUserProduct {
+  description: "Grant seller read access to products"
+  participant: "com.redpola.vivi.Seller"
+  operation: READ
+  resource: "com.redpola.vivi.Product"
+  action: ALLOW
+}
+
+rule SellerUserOrder {
+  description: "Enable Sellers to read and update on their own Orders"
+  participant(m): "com.redpola.vivi.Seller"
+  operation: READ, UPDATE
+  resource(v): "com.redpola.vivi.Order"
+  condition: (v.seller.getIdentifier() == m.getIdentifier())
+  action: ALLOW
+}
+
+rule SellerUserOrderDelivering {
+  description: "Enable Sellers to create OrderDelivering transaction"
+  participant(m): "com.redpola.vivi.Seller"
+  operation: CREATE
+  resource(v): "com.redpola.vivi.OrderDelivering"
+  condition: (v.order.seller.getIdentifier() == m.getIdentifier())
+  action: ALLOW
+}
+
