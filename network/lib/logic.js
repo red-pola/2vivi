@@ -50,6 +50,27 @@ async function orderCreatingTransaction(tx) {
 }
 
 /**
+ * Order cancelling transaction
+ * @param {com.redpola.vivi.OrderCancelling} tx = order cancelling transaction
+ * @transaction
+ */
+async function orderCancellingTransaction(tx) {
+  if (tx.order.status !== STATUS.CONFIRMED.value) {
+    throw new Error(`You cannot cancel an order at ${tx.order.status} status`);
+  }
+
+  tx.order.cancelled = tx.timestamp;
+  tx.order.status = STATUS.CANCELLED.value;
+  tx.order.memo = STATUS.CANCELLED.message;
+
+  const orderRegistry = await getAssetRegistry(`${NS}.Order`);
+
+  await orderRegistry.update(tx.order);
+
+  emitOrderEvent('OrderCancelled', tx.order);
+}
+
+/**
  * emitOrderEvent emits an order event of the type passed in on param 1
  *   all OrderEvents have one extra parameter, which is the order identifier
  * @param {String} event - the event to be emitted

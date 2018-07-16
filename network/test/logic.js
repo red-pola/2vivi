@@ -346,6 +346,7 @@ describe('2vivi Business Network', () => {
 
       updatedOrder.buyer.getIdentifier().should.equal('1');
       updatedOrder.seller.getIdentifier().should.equal('1');
+      updatedOrder.status.should.equal('CONFIRMED');
       should.exist(updatedOrder.created);
       updatedOrder.paymentMethod.should.equal('COD');
       updatedOrder.amount.should.equal(12000 * 2 + 22000);
@@ -395,6 +396,33 @@ describe('2vivi Business Network', () => {
       );
       orders = await orderRegistry.getAll();
       orders.length.should.equal(0);
+    });
+
+    it('can cancel an order', async () => {
+      await useIdentity('buyer1');
+
+      const orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`,
+      );
+
+      const item = factory.newConcept(NS, 'OrderItem');
+      item.quantity = 2;
+      item.product = factory.newRelationship(NS, 'Product', '1');
+
+      const order = await createOrder('1', '1', '1', [item]);
+
+      const orderCancelling = factory.newTransaction(NS, 'OrderCancelling');
+      orderCancelling.order = factory.newRelationship(
+        NS,
+        'Order',
+        order.getIdentifier(),
+      );
+
+      await businessNetworkConnection.submitTransaction(orderCancelling);
+
+      const updatedOrder = await orderRegistry.get(order.getIdentifier());
+      updatedOrder.status.should.equal('CANCELLED');
+      should.exist(updatedOrder.cancelled);
     });
   });
 });

@@ -46,3 +46,11 @@ rule BuyerUserOrderCreating {
   resource: "com.redpola.vivi.OrderCreating"
   action: ALLOW
 }
+
+rule BuyerUserOrderCancelling {
+  description: "Enable Buyers to create OrderCancelling transaction"
+  participant: "com.redpola.vivi.Buyer"
+  operation: CREATE
+  resource: "com.redpola.vivi.OrderCancelling"
+  action: ALLOW
+}
