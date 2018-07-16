@@ -91,7 +91,9 @@ async function orderDeliveringTransaction(tx) {
 
   await orderRegistry.update(tx.order);
 
-  emitOrderEvent('OrderDeliveryStatusUpdated', tx.order);
+  emitOrderEvent('OrderDeliveryStatusUpdated', tx.order, {
+    message: tx.deliveryStatus,
+  });
 }
 
 /**
@@ -100,12 +102,18 @@ async function orderDeliveringTransaction(tx) {
  * @param {String} event - the event to be emitted
  * @param {com.redpola.vivi.Order} order - the order to be associated with this event
  */
-function emitOrderEvent(event, order) {
+function emitOrderEvent(event, order, options = {}) {
   const orderEvent = getFactory().newEvent(NS, event);
 
   orderEvent.orderID = order.getIdentifier();
   orderEvent.buyerID = order.buyer.getIdentifier();
   orderEvent.sellerID = order.seller.getIdentifier();
+
+  switch (event) {
+  case 'OrderDeliveryStatusUpdated':
+    orderEvent.deliveryStatus = options.message;
+    break;
+  }
 
   emit(orderEvent);
 }

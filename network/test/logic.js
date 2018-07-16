@@ -425,6 +425,9 @@ describe('2vivi Business Network', () => {
       const updatedOrder = await orderRegistry.get(order.getIdentifier());
       updatedOrder.status.should.equal('CANCELLED');
       should.exist(updatedOrder.cancelled);
+
+      events.length.should.equal(2);
+      events[1].getType().should.equal('OrderCancelled');
     });
 
     it('cannot cancel the other\'s order', async () => {
@@ -525,8 +528,9 @@ describe('2vivi Business Network', () => {
 
       await useIdentity('seller1');
 
+      const deliveringMessage = 'Delivering';
       const orderDelivering = factory.newTransaction(NS, 'OrderDelivering');
-      orderDelivering.deliveryStatus = 'Delivering';
+      orderDelivering.deliveryStatus = deliveringMessage;
       orderDelivering.order = factory.newRelationship(
         NS,
         'Order',
@@ -541,14 +545,25 @@ describe('2vivi Business Network', () => {
 
       let updatedOrder = await orderRegistry.get(order.getIdentifier());
       should.exist(updatedOrder.delivering);
-      updatedOrder.memo.should.equal('Delivering');
+      updatedOrder.memo.should.equal(deliveringMessage);
 
-      orderDelivering.deliveryStatus = 'Delay #1';
+      const delayMessage = 'Delay #1';
+      orderDelivering.deliveryStatus = delayMessage;
 
       await businessNetworkConnection.submitTransaction(orderDelivering);
 
       updatedOrder = await orderRegistry.get(order.getIdentifier());
-      updatedOrder.memo.should.equal('Delay #1');
+      updatedOrder.memo.should.equal(delayMessage);
+
+      events.length.should.equal(2);
+
+      const [event1, event2] = events;
+
+      event1.getType().should.equal('OrderDeliveryStatusUpdated');
+      event1.deliveryStatus.should.equal(deliveringMessage);
+
+      event2.getType().should.equal('OrderDeliveryStatusUpdated');
+      event2.deliveryStatus.should.equal(delayMessage);
     });
   });
 });

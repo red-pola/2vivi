@@ -94,6 +94,7 @@ event OrderCancelled extends OrderEvent {
 event OrderDeliveryStatusUpdated extends OrderEvent {
   o String buyerID
   o String sellerID
+  o String deliveryStatus
 }
 
 // Notification that order has been delivered
