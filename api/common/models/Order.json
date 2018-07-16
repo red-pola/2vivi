@@ -17,26 +17,26 @@
   "properties": {
     "$class": {
       "type": "string",
+      "default": "com.redpola.vivi.Order",
       "required": false,
-      "description": "The class identifier for this type",
-      "default": "com.redpola.vivi.Order"
+      "description": "The class identifier for this type"
     },
     "orderID": {
       "type": "string",
       "id": true,
-      "required": true,
-      "description": "The instance identifier for this type"
+      "description": "The instance identifier for this type",
+      "required": true
     },
     "status": {
       "type": "string",
-      "required": true,
       "enum": [
         "SUBMITTED",
         "CONFIRMED",
         "CANCELLED",
         "DELIVERING",
         "COMPLETED"
-      ]
+      ],
+      "required": true
     },
     "memo": {
       "type": "string",
@@ -48,47 +48,43 @@
     },
     "paymentMethod": {
       "type": "string",
-      "required": true,
-      "enum": [
-        "COD"
-      ]
+      "enum": ["COD"],
+      "required": false
     },
     "created": {
       "type": "date",
-      "required": true
+      "required": false
     },
     "cancelled": {
       "type": "date",
-      "required": true
+      "required": false
     },
     "delivering": {
       "type": "date",
-      "required": true
+      "required": false
     },
     "completed": {
       "type": "date",
-      "required": true
+      "required": false
     },
     "items": {
-      "type": [
-        "string"
-      ],
-      "required": false,
-      "default": []
+      "type": ["string"],
+      "default": [],
+      "required": false
     },
     "buyer": {
       "type": "any",
-      "required": true,
-      "description": "The identifier of an instance of buyer"
+      "description": "The identifier of an instance of buyer",
+      "required": true
     },
     "seller": {
       "type": "any",
-      "required": true,
-      "description": "The identifier of an instance of seller"
+      "description": "The identifier of an instance of seller",
+      "required": false
     }
   },
   "validations": [],
   "relations": {},
   "acls": [],
-  "methods": {}
+  "methods": []
 }

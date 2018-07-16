@@ -16,9 +16,9 @@
   "properties": {
     "$class": {
       "type": "string",
+      "default": "com.redpola.base.Address",
       "required": false,
-      "description": "The class identifier for this type",
-      "default": "com.redpola.base.Address"
+      "description": "The class identifier for this type"
     },
     "street": {
       "type": "string",
@@ -42,12 +42,12 @@
     },
     "country": {
       "type": "string",
-      "required": true,
-      "default": "Việt Nam"
+      "default": "Việt Nam",
+      "required": true
     }
   },
   "validations": [],
   "relations": {},
   "acls": [],
-  "methods": {}
+  "methods": []
 }

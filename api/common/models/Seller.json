@@ -17,15 +17,15 @@
   "properties": {
     "$class": {
       "type": "string",
+      "default": "com.redpola.vivi.Seller",
       "required": false,
-      "description": "The class identifier for this type",
-      "default": "com.redpola.vivi.Seller"
+      "description": "The class identifier for this type"
     },
     "sellerID": {
       "type": "string",
       "id": true,
-      "required": true,
-      "description": "The instance identifier for this type"
+      "description": "The instance identifier for this type",
+      "required": true
     },
     "storeName": {
       "type": "string",
@@ -33,11 +33,11 @@
     },
     "firstName": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "lastName": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "email": {
       "type": "string",
@@ -45,11 +45,11 @@
     },
     "address": {
       "type": "Address",
-      "required": true
+      "required": false
     }
   },
   "validations": [],
   "relations": {},
   "acls": [],
-  "methods": {}
+  "methods": []
 }

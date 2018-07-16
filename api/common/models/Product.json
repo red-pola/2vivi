@@ -17,15 +17,15 @@
   "properties": {
     "$class": {
       "type": "string",
+      "default": "com.redpola.vivi.Product",
       "required": false,
-      "description": "The class identifier for this type",
-      "default": "com.redpola.vivi.Product"
+      "description": "The class identifier for this type"
     },
     "productID": {
       "type": "string",
       "id": true,
-      "required": true,
-      "description": "The instance identifier for this type"
+      "description": "The instance identifier for this type",
+      "required": true
     },
     "name": {
       "type": "string",
@@ -47,5 +47,5 @@
   "validations": [],
   "relations": {},
   "acls": [],
-  "methods": {}
+  "methods": []
 }

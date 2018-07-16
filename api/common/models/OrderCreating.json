@@ -14,13 +14,12 @@
       "abstract": false
     }
   },
-  "forceId": true,
   "properties": {
     "$class": {
       "type": "string",
+      "default": "com.redpola.vivi.OrderCreating",
       "required": false,
-      "description": "The class identifier for this type",
-      "default": "com.redpola.vivi.OrderCreating"
+      "description": "The class identifier for this type"
     },
     "amount": {
       "type": "number",
@@ -28,32 +27,30 @@
     },
     "paymentMethod": {
       "type": "string",
-      "required": true,
-      "enum": [
-        "COD"
-      ]
+      "enum": ["COD"],
+      "required": true
     },
     "order": {
       "type": "any",
-      "required": true,
-      "description": "The identifier of an instance of order"
+      "description": "The identifier of an instance of order",
+      "required": true
     },
     "buyer": {
       "type": "any",
-      "required": true,
-      "description": "The identifier of an instance of buyer"
+      "description": "The identifier of an instance of buyer",
+      "required": true
     },
     "seller": {
       "type": "any",
-      "required": true,
-      "description": "The identifier of an instance of seller"
+      "description": "The identifier of an instance of seller",
+      "required": true
     },
     "transactionId": {
       "type": "string",
       "id": true,
-      "generated": true,
+      "description": "The instance identifier for this type",
       "required": false,
-      "description": "The instance identifier for this type"
+      "generated": true
     },
     "timestamp": {
       "type": "date",
@@ -63,5 +60,6 @@
   "validations": [],
   "relations": {},
   "acls": [],
-  "methods": {}
+  "methods": [],
+  "forceId": true
 }
