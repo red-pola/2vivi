@@ -56,6 +56,15 @@ rule BuyerUserOrderCancelling {
   action: ALLOW
 }
 
+rule BuyerUserOrderCompleting {
+  description: "Enable Buyers to create OrderCompleting transaction"
+  participant(m): "com.redpola.vivi.Buyer"
+  operation: CREATE
+  resource(v): "com.redpola.vivi.OrderCompleting"
+  condition: (v.order.buyer.getIdentifier() == m.getIdentifier())
+  action: ALLOW
+}
+
 rule SellerUserProduct {
   description: "Grant seller read access to products"
   participant: "com.redpola.vivi.Seller"

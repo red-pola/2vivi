@@ -97,10 +97,32 @@ async function orderDeliveringTransaction(tx) {
 }
 
 /**
+ * Order completing transaction
+ * @param {com.redpola.vivi.OrderCompleting} tx - order completing transaction
+ * @transaction
+ */
+async function orderCompletingTransaction(tx) {
+  if (tx.order.status !== STATUS.DELIVERING.value) {
+    throw new Error('Cannot complete an order which has no delivering status');
+  }
+
+  tx.order.completed = tx.timestamp;
+  tx.order.status = STATUS.COMPLETED.value;
+  tx.order.memo = STATUS.COMPLETED.message;
+
+  const orderRegistry = await getAssetRegistry(`${NS}.Order`);
+
+  await orderRegistry.update(tx.order);
+
+  emitOrderEvent('OrderCompleted', tx.order);
+}
+
+/**
  * emitOrderEvent emits an order event of the type passed in on param 1
  *   all OrderEvents have one extra parameter, which is the order identifier
  * @param {String} event - the event to be emitted
  * @param {com.redpola.vivi.Order} order - the order to be associated with this event
+ * @param {Object} options - optional params
  */
 function emitOrderEvent(event, order, options = {}) {
   const orderEvent = getFactory().newEvent(NS, event);

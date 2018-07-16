@@ -456,6 +456,56 @@ describe('2vivi Business Network', () => {
         .submitTransaction(orderCancelling)
         .should.be.rejectedWith(Error);
     });
+
+    it('can mark an order as completed', async () => {
+      await useIdentity('buyer1');
+
+      const item = factory.newConcept(NS, 'OrderItem');
+      item.quantity = 2;
+      item.product = factory.newRelationship(NS, 'Product', '1');
+
+      const order = await createOrder('1', '1', '1', [item]);
+
+      const orderCompleting = factory.newTransaction(NS, 'OrderCompleting');
+      orderCompleting.order = factory.newRelationship(
+        NS,
+        'Order',
+        order.getIdentifier(),
+      );
+
+      await businessNetworkConnection
+        .submitTransaction(orderCompleting)
+        .should.be.rejectedWith(
+          /Cannot complete an order which has no delivering status/,
+        );
+
+      await useIdentity('seller1');
+
+      const orderDelivering = factory.newTransaction(NS, 'OrderDelivering');
+      orderDelivering.deliveryStatus = 'Deliveried';
+      orderDelivering.order = factory.newRelationship(
+        NS,
+        'Order',
+        order.getIdentifier(),
+      );
+
+      await businessNetworkConnection.submitTransaction(orderDelivering);
+
+      await useIdentity('buyer1');
+
+      await businessNetworkConnection.submitTransaction(orderCompleting);
+
+      const orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`,
+      );
+
+      const updatedOrder = await orderRegistry.get(order.getIdentifier());
+      should.exist(updatedOrder.completed);
+      updatedOrder.memo.should.equal('Order completed');
+
+      events.length.should.equal(1);
+      events[0].getType().should.equal('OrderCompleted');
+    });
   });
 
   describe('Seller participant', () => {
