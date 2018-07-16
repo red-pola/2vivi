@@ -16,7 +16,25 @@ const STATUS = {
  * @transaction
  */
 async function orderCreatingTransaction(tx) {
-  tx.order.amount = tx.amount;
+  if (!tx.order.items.length) {
+    throw new Error('Cannot place an order without any items');
+  }
+
+  let amount = 0;
+  tx.order.items.forEach(item => {
+    if (item.quantity > item.product.quantity) {
+      throw new Error(
+        `Product ${item.product.name} only has ${item.product.quantity} item${
+          item.product.quantity === 1 ? '' : 's'
+        } left`,
+      );
+    }
+
+    item.price = item.product.price;
+    amount += item.quantity * item.price;
+  });
+
+  tx.order.amount = amount;
   tx.order.paymentMethod = tx.paymentMethod;
   tx.order.buyer = tx.buyer;
   tx.order.seller = tx.seller;

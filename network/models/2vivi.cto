@@ -2,6 +2,24 @@ namespace com.redpola.vivi
 
 import com.redpola.base.*
 
+enum OrderStatus {
+  o SUBMITTED
+  o CONFIRMED
+  o CANCELLED
+  o DELIVERING
+  o COMPLETED
+}
+
+enum PaymentMethod {
+  o COD
+}
+
+concept OrderItem {
+  o Integer quantity default=0
+  o Double price default=0.0
+  --> Product product
+}
+
 participant Buyer identified by buyerID extends Member {
   o String buyerID
   o String avatarURL optional
@@ -22,7 +40,7 @@ asset Order identified by orderID {
   o DateTime cancelled optional
   o DateTime delivering optional
   o DateTime completed optional
-  o String[] items
+  o OrderItem[] items
   --> Buyer buyer
   --> Seller seller optional
 }
@@ -32,11 +50,11 @@ asset Product identified by productID {
   o String name
   o String description
   o String providerName
+  o Integer quantity
   o Double price
 }
 
 transaction OrderCreating {
-  o Double amount
   o PaymentMethod paymentMethod
   --> Order order
   --> Buyer buyer

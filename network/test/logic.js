@@ -187,12 +187,14 @@ describe('2vivi Business Network', () => {
     product1.name = 'Product #1';
     product1.description = 'Product #1 description';
     product1.price = 12000;
+    product1.quantity = 10;
     product1.providerName = 'Provider #1';
 
     const product2 = factory.newResource(NS, 'Product', '2');
     product2.name = 'Product #2';
     product2.description = 'Product #2 description';
     product2.price = 22000;
+    product2.quantity = 5;
     product2.providerName = 'Provider #1';
 
     await productRegistry.addAll([product1, product2]);
@@ -244,26 +246,29 @@ describe('2vivi Business Network', () => {
     /**
      * Create and submit creating order transaction
      */
-    async function createOrder(id, buyerID, sellerID) {
+    async function createOrder(id, buyerID, sellerID, items) {
       const orderRegistry = await businessNetworkConnection.getAssetRegistry(
-        `${NS}.Order`
+        `${NS}.Order`,
       );
 
       const order = factory.newResource(NS, 'Order', id);
       order.status = 'SUBMITTED';
       order.memo = '';
       order.amount = 0;
-      order.items = [];
+      order.items = items;
       order.buyer = factory.newRelationship(NS, 'Buyer', buyerID);
 
       await orderRegistry.add(order);
 
       const orderCreating = factory.newTransaction(NS, 'OrderCreating');
-      orderCreating.amount = 0;
       orderCreating.paymentMethod = 'COD';
       orderCreating.buyer = factory.newRelationship(NS, 'Buyer', buyerID);
       orderCreating.seller = factory.newRelationship(NS, 'Seller', sellerID);
-      orderCreating.order = factory.newRelationship(NS, 'Order', order.getIdentifier());
+      orderCreating.order = factory.newRelationship(
+        NS,
+        'Order',
+        order.getIdentifier(),
+      );
 
       await businessNetworkConnection.submitTransaction(orderCreating);
 
@@ -291,20 +296,59 @@ describe('2vivi Business Network', () => {
       product2.price.should.equal(22000);
     });
 
+    it('cannot place an order without any items', async () => {
+      const orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`,
+      );
+
+      await useIdentity('buyer1');
+
+      await createOrder('1', '1', '1', []).should.be.rejectedWith(
+        /Cannot place an order without any items/,
+      );
+    });
+
+    it('cannot place an order which exceed the product quantity', async () => {
+      const orderRegistry = await businessNetworkConnection.getAssetRegistry(
+        `${NS}.Order`,
+      );
+
+      await useIdentity('buyer1');
+
+      const item = factory.newConcept(NS, 'OrderItem');
+      item.quantity = 20;
+      item.product = factory.newRelationship(NS, 'Product', '1');
+
+      await createOrder('1', '1', '1', [item]).should.be.rejectedWith(/Product (.*) only has (.*) item[s]* left/);
+    });
+
     it('can place an order', async () => {
       await useIdentity('buyer1');
 
       const orderRegistry = await businessNetworkConnection.getAssetRegistry(
-        `${NS}.Order`
+        `${NS}.Order`,
       );
 
-      const order = await createOrder('1', '1', '1');
+      const items = [];
+
+      let item = factory.newConcept(NS, 'OrderItem');
+      item.quantity = 2;
+      item.product = factory.newRelationship(NS, 'Product', '1');
+      items.push(item);
+
+      item = factory.newConcept(NS, 'OrderItem');
+      item.quantity = 1;
+      item.product = factory.newRelationship(NS, 'Product', '2');
+      items.push(item);
+
+      const order = await createOrder('1', '1', '1', items);
       const updatedOrder = await orderRegistry.get(order.getIdentifier());
 
       updatedOrder.buyer.getIdentifier().should.equal('1');
       updatedOrder.seller.getIdentifier().should.equal('1');
       should.exist(updatedOrder.created);
       updatedOrder.paymentMethod.should.equal('COD');
+      updatedOrder.amount.should.equal(12000 * 2 + 22000);
 
       events.length.should.equal(1);
       events[0].getType().should.equal('OrderCreated');
@@ -312,7 +356,7 @@ describe('2vivi Business Network', () => {
 
     it('can read their own orders', async () => {
       const orderRegistry = await businessNetworkConnection.getAssetRegistry(
-        `${NS}.Order`
+        `${NS}.Order`,
       );
 
       await useIdentity('buyer1');
@@ -320,7 +364,11 @@ describe('2vivi Business Network', () => {
       let orders = await orderRegistry.getAll();
       orders.length.should.equal(0);
 
-      await createOrder('1', '1', '1');
+      const item = factory.newConcept(NS, 'OrderItem');
+      item.quantity = 2;
+      item.product = factory.newRelationship(NS, 'Product', '1');
+
+      await createOrder('1', '1', '1', [item]);
 
       orders = await orderRegistry.getAll();
       orders.length.should.equal(1);
@@ -330,15 +378,20 @@ describe('2vivi Business Network', () => {
     it('cannot read other\'s orders', async () => {
       await useIdentity('buyer1');
       let orderRegistry = await businessNetworkConnection.getAssetRegistry(
-        `${NS}.Order`
+        `${NS}.Order`,
       );
-      await createOrder('1', '1', '1');
+
+      const item = factory.newConcept(NS, 'OrderItem');
+      item.quantity = 2;
+      item.product = factory.newRelationship(NS, 'Product', '1');
+
+      await createOrder('1', '1', '1', [item]);
       let orders = await orderRegistry.getAll();
       orders.length.should.equal(1);
 
       await useIdentity('buyer2');
       orderRegistry = await businessNetworkConnection.getAssetRegistry(
-        `${NS}.Order`
+        `${NS}.Order`,
       );
       orders = await orderRegistry.getAll();
       orders.length.should.equal(0);

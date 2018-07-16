@@ -6,7 +6,7 @@ concept Address {
   o String district
   o String city optional
   o String province
-  o String country default = "Việt Nam"
+  o String country default="Việt Nam"
 }
 
 abstract participant Member {
@@ -16,14 +16,3 @@ abstract participant Member {
   o Address address optional
 }
 
-enum OrderStatus {
-  o SUBMITTED
-  o CONFIRMED
-  o CANCELLED
-  o DELIVERING
-  o COMPLETED
-}
-
-enum PaymentMethod {
-  o COD
-}
